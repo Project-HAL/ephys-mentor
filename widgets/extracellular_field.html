@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Extracellular Field</title>
+<style>
+:root{--bg:#f7f6f2;--panel:#fff;--fg:#1d1d1f;--muted:#66666c;--grid:#e8e6e0;--border:#dcd9d2;--accent:#2f6fdf;--c1:#2f6fdf;--c2:#d9480f;--c3:#2b8a3e;--c4:#9c36b5;--ghost:#a3a7ad;--neg:#2f6fdf;--pos:#d9480f}
+@media (prefers-color-scheme:dark){:root{--bg:#16171a;--panel:#1f2024;--fg:#ececef;--muted:#9a9aa2;--grid:#2c2d33;--border:#35363d;--accent:#6ea0ff;--c1:#6ea0ff;--c2:#ff8a50;--c3:#5fd07a;--c4:#d58cf0;--ghost:#62666d;--neg:#6ea0ff;--pos:#ff8a50}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:16px}
+h1{font-size:1.35rem;margin:.2em 0}
+.sub{color:var(--muted);margin:0 0 14px}
+.grid{display:grid;grid-template-columns:290px minmax(300px,440px) 1fr;gap:16px;align-items:start}
+@media (max-width:1100px){.grid{grid-template-columns:290px 1fr}.plots{grid-column:1 / -1}}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+label{display:block;font-size:.85rem;color:var(--muted);margin-top:8px}
+label b{color:var(--fg);font-weight:600;float:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+#field{width:100%;aspect-ratio:1/1;display:block;cursor:crosshair;border-radius:6px}
+canvas.pl{width:100%;height:220px;display:block}
+.plots{position:relative}
+.cover{position:absolute;inset:0;background:var(--panel);display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;border-radius:10px;text-align:center;padding:20px;z-index:2}
+.cover.on{display:flex}
+button{font:inherit;font-size:.9rem;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--fg);cursor:pointer}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.readout{font-variant-numeric:tabular-nums;margin-top:10px;font-size:.9rem}
+.readout div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--grid);padding:3px 0}
+.note{font-size:.8rem;color:var(--muted);margin-top:12px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin:2px 0 4px 62px}
+.legend span::before{content:"";display:inline-block;width:16px;height:3px;background:var(--c);margin-right:6px;vertical-align:middle}
+.seg{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:6px}
+.seg button{border:0;border-radius:0;flex:1;font-size:.82rem;padding:6px 4px}
+.seg button.on{background:var(--accent);color:#fff}
+.check{display:flex;gap:6px;align-items:center;margin-top:10px;font-size:.85rem;color:var(--fg)}
+fieldset{border:1px solid var(--border);border-radius:8px;margin:10px 0 0;padding:4px 10px 10px}
+legend.fs{font-size:.85rem;font-weight:600;padding:0 4px}
+details{margin-top:12px;font-size:.88rem}
+summary{cursor:pointer;font-weight:600}
+details li{margin:4px 0}
+.cbar{height:10px;border-radius:5px;margin-top:6px;background:linear-gradient(90deg,var(--neg),var(--panel),var(--pos))}
+.cbl{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+.hint{font-size:.8rem;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<main>
+<h1>What an extracellular electrode sees</h1>
+<p class="sub">Each neuron is modeled as a current sink at the soma and an equal, opposite source at the end of its dendrite, in a uniform conductive medium. The electrode records potential <b>relative to a reference</b>. Modules 7 and 8.</p>
+<div class="grid">
+<div class="panel">
+  <div style="font-size:.85rem;color:var(--muted)">Click on the field to place:</div>
+  <div class="seg" id="place"><button data-v="rec" class="on">Recording electrode</button><button data-v="ref">Reference</button></div>
+  <label class="check"><input type="checkbox" id="refinf" checked> Reference far away (ideal)</label>
+  <fieldset><legend class="fs">Cell 1</legend>
+  <label>Orientation <b id="ang_v"></b><input type="range" id="ang" min="0" max="1000" data-min="0" data-max="360"></label>
+  <label>Soma-to-dendrite length <b id="len_v"></b><input type="range" id="len" min="0" max="1000" data-min="20" data-max="200"></label>
+  <label>Peak transmembrane current <b id="I0_v"></b><input type="range" id="I0" min="0" max="1000" data-min="0.5" data-max="10"></label>
+  </fieldset>
+  <fieldset><legend class="fs">Cell 2</legend>
+  <label class="check" style="margin-top:2px"><input type="checkbox" id="c2on"> Cell 2 on</label>
+  <label>Spike timing offset vs cell 1 <b id="off_v"></b><input type="range" id="off" min="0" max="1000" data-min="-2" data-max="2"></label>
+  </fieldset>
+  <label>Medium conductivity σ <b id="sig_v"></b><input type="range" id="sig" min="0" max="1000" data-min="0.1" data-max="2" data-log></label>
+  <label>Field snapshot time <b id="tt_v"></b><input type="range" id="tt" min="0" max="1000" data-min="0" data-max="4"></label>
+  <label class="check"><input type="checkbox" id="predict"> Prediction mode (hide results)</label>
+  <details>
+    <summary>Try this</summary>
+    <ol>
+      <li>Predict, then move the electrode away from the soma. The cell's current never changed. Why did the recording?</li>
+      <li>Record near the soma, then near the dendrite end. Same spike, opposite polarity. So what does "negative" tell you?</li>
+      <li>Untick "far away" and place the reference near the cell. What happened to every recording?</li>
+      <li>Turn on cell 2. Compare offset 0 (synchronous) with ±1 ms.</li>
+      <li>Place the electrode at two neighboring spots, then two distant spots. Why are neighbors similar?</li>
+    </ol>
+  </details>
+</div>
+<div class="panel">
+  <canvas id="field"></canvas>
+  <div class="cbar"></div><div class="cbl"><span>negative</span><span>0 (relative to far away)</span><span>positive</span></div>
+  <div class="hint">Colors show potential at the snapshot time, relative to a point infinitely far away. Grid spacing 50 µm.</div>
+</div>
+<div class="panel plots">
+  <div class="cover" id="cover"><div><b>Make your prediction first.</b><br>Say what you expect and why.</div><button class="primary" id="reveal">Reveal</button></div>
+  <div class="legend" id="leg1"></div>
+  <canvas class="pl" id="cv1"></canvas>
+  <div class="legend" id="leg2"></div>
+  <canvas class="pl" id="cv2"></canvas>
+  <div class="readout" id="read"></div>
+  <p class="note">Point-source approximation in an infinite, uniform, purely resistive medium, with no electrode interface, no filtering, and no noise. Real cells have distributed currents and complex geometry, and tissue is not uniform. Values are illustrative.</p>
+</div>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function ctl(id){const e=$(id),lo=+e.dataset.min,hi=+e.dataset.max,t=e.value/1000;return 'log' in e.dataset?lo*Math.pow(hi/lo,t):lo+(hi-lo)*t}
+function setCtl(id,v){const e=$(id),lo=+e.dataset.min,hi=+e.dataset.max;e.value=Math.round(1000*('log' in e.dataset?Math.log(v/lo)/Math.log(hi/lo):(v-lo)/(hi-lo)))}
+function sig(v,p=3){if(v===0)return'0';if(Math.abs(v)<1e-9)return'0';return String(+v.toPrecision(p))}
+function niceTicks(a,b,n){const span=b-a;if(!(span>0))return[a];const raw=span/(n||5),p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p,st=(f<1.5?1:f<3?2:f<7?5:10)*p,t=[];for(let v=Math.ceil(a/st-1e-9)*st;v<=b+st*1e-9;v+=st)t.push(+v.toPrecision(10));return t}
+function logTicks(a,b){const t=[];for(let e=Math.floor(Math.log10(a));e<=Math.ceil(Math.log10(b));e++)for(const k of [1,2,5]){const v=k*Math.pow(10,e);if(v>=a*0.999&&v<=b*1.001)t.push(v)}return t}
+function setup(c){const d=window.devicePixelRatio||1,r=c.getBoundingClientRect();c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return{ctx:x,w:r.width,h:r.height}}
+function plot(c,o){
+  const {ctx,w,h}=setup(c),m={l:62,r:14,t:10,b:40},pw=w-m.l-m.r,ph=h-m.t-m.b;
+  const fg=css('--fg'),mu=css('--muted'),gr=css('--grid');
+  const tx=v=>o.xlog?Math.log10(v):v,ty=v=>o.ylog?Math.log10(v):v;
+  const xa=tx(o.xlim[0]),xb=tx(o.xlim[1]),ya=ty(o.ylim[0]),yb=ty(o.ylim[1]);
+  const X=v=>m.l+(tx(v)-xa)/(xb-xa)*pw,Y=v=>m.t+ph-(ty(v)-ya)/(yb-ya)*ph;
+  ctx.clearRect(0,0,w,h);ctx.font='12px system-ui,sans-serif';ctx.lineWidth=1;
+  const xt=o.xlog?logTicks(o.xlim[0],o.xlim[1]):niceTicks(o.xlim[0],o.xlim[1],6);
+  const yt=o.ylog?logTicks(o.ylim[0],o.ylim[1]):niceTicks(o.ylim[0],o.ylim[1],5);
+  ctx.strokeStyle=gr;ctx.fillStyle=mu;ctx.textAlign='center';ctx.textBaseline='top';
+  for(const v of xt){const x=X(v);ctx.beginPath();ctx.moveTo(x,m.t);ctx.lineTo(x,m.t+ph);ctx.stroke();ctx.fillText(sig(v),x,m.t+ph+5)}
+  ctx.textAlign='right';ctx.textBaseline='middle';
+  for(const v of yt){const y=Y(v);ctx.beginPath();ctx.moveTo(m.l,y);ctx.lineTo(m.l+pw,y);ctx.stroke();ctx.fillText(sig(v),m.l-6,y)}
+  ctx.strokeStyle=mu;ctx.strokeRect(m.l,m.t,pw,ph);
+  ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(o.xlabel||'',m.l+pw/2,h-2);
+  ctx.save();ctx.translate(13,m.t+ph/2);ctx.rotate(-Math.PI/2);ctx.textBaseline='middle';ctx.fillText(o.ylabel||'',0,0);ctx.restore();
+  ctx.save();ctx.beginPath();ctx.rect(m.l,m.t,pw,ph);ctx.clip();
+  for(const l of o.h||[]){ctx.strokeStyle=l.c||mu;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(m.l,Y(l.y));ctx.lineTo(m.l+pw,Y(l.y));ctx.stroke();ctx.setLineDash([])}
+  for(const l of o.v||[]){ctx.strokeStyle=l.c||mu;ctx.setLineDash([2,4]);ctx.beginPath();ctx.moveTo(X(l.x),m.t);ctx.lineTo(X(l.x),m.t+ph);ctx.stroke();ctx.setLineDash([]);if(l.t){ctx.fillStyle=l.c||mu;ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText(l.t,X(l.x)+3,m.t+3)}}
+  for(const s of o.s||[]){ctx.strokeStyle=s.c;ctx.lineWidth=s.w||2;ctx.setLineDash(s.d||[]);ctx.beginPath();let st=false;for(let i=0;i<s.x.length;i++){const yv=s.y[i];if(!isFinite(yv)||(o.ylog&&yv<=0)){st=false;continue}const px=X(s.x[i]),py=Y(yv);st?ctx.lineTo(px,py):ctx.moveTo(px,py);st=true}ctx.stroke();ctx.setLineDash([])}
+  for(const p of o.p||[]){ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(X(p.x),Y(p.y),5,0,7);ctx.fill()}
+  ctx.restore();
+}
+function range(arrs,pad,incl){pad=pad==null?0.08:pad;let lo=Infinity,hi=-Infinity;for(const a of arrs)for(const v of a){if(isFinite(v)){if(v<lo)lo=v;if(v>hi)hi=v}}for(const v of incl||[]){lo=Math.min(lo,v);hi=Math.max(hi,v)}if(!isFinite(lo)){lo=0;hi=1}if(hi-lo<1e-6){hi+=1;lo-=1}const p=(hi-lo)*pad;return[lo-p,hi+p]}
+function legend(id,items){$(id).innerHTML=items.map(([t,c])=>`<span style="--c:${c}">${t}</span>`).join('')}
+function hex(c){c=c.replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');return[0,2,4].map(i=>parseInt(c.substr(i,2),16))}
+
+// ---- model ----
+const HALF=200; // field spans -200..200 µm
+const RMIN=8;   // µm, closest approach (soma radius)
+let placing='rec',rec={x:45,y:-35},ref={x:170,y:170},covered=false;
+const cell2={x:-110,y:-110};
+const G=(t,mu,s)=>Math.exp(-0.5*((t-mu)/s)**2);
+const iS=(t,I0)=>I0*(-G(t,1.0,0.12)+0.35*G(t,1.45,0.3)); // soma membrane current, + = outward (nA)
+function cells(){
+  const a=ctl('ang')*Math.PI/180,L=ctl('len');
+  const c1={sx:0,sy:0,dx:L*Math.cos(a),dy:L*Math.sin(a),off:0};
+  const list=[c1];
+  if($('c2on').checked)list.push({sx:cell2.x,sy:cell2.y,dx:cell2.x+L*Math.cos(a),dy:cell2.y+L*Math.sin(a),off:ctl('off')});
+  return list;
+}
+// geometric factor in µV per nA of soma current
+function geo(c,px,py,sigma){
+  const rs=Math.max(RMIN,Math.hypot(px-c.sx,py-c.sy)),rd=Math.max(RMIN,Math.hypot(px-c.dx,py-c.dy));
+  return 1000/(4*Math.PI*sigma)*(1/rs-1/rd);
+}
+function phi(cs,px,py,t,sigma,I0){let v=0;for(const c of cs)v+=iS(t-c.off,I0)*geo(c,px,py,sigma);return v}
+function recorded(cs,t,sigma,I0,only){
+  const use=only?[only]:cs;
+  let v=phi(use,rec.x,rec.y,t,sigma,I0);
+  if(!$('refinf').checked)v-=phi(use,ref.x,ref.y,t,sigma,I0);
+  return v;
+}
+// ---- drawing ----
+function drawField(){
+  const cv=$('field'),{ctx,w,h}=setup(cv);
+  const sigma=ctl('sig'),I0=ctl('I0'),t=ctl('tt'),cs=cells();
+  const W2S=(x,y)=>[(x+HALF)/(2*HALF)*w,(HALF-y)/(2*HALF)*h];
+  const bg=hex(css('--panel')),neg=hex(css('--neg')),pos=hex(css('--pos'));
+  ctx.clearRect(0,0,w,h);
+  if(!covered){
+    const n=120,img=ctx.createImageData(n,n),vmax=60;
+    for(let j=0;j<n;j++)for(let i=0;i<n;i++){
+      const x=-HALF+(i+0.5)/n*2*HALF,y=HALF-(j+0.5)/n*2*HALF;
+      const v=phi(cs,x,y,t,sigma,I0),a=Math.min(1,Math.pow(Math.abs(v)/vmax,0.5)),col=v<0?neg:pos,k=(j*n+i)*4;
+      for(let q=0;q<3;q++)img.data[k+q]=bg[q]+(col[q]-bg[q])*a;img.data[k+3]=255;
+    }
+    const off=document.createElement('canvas');off.width=n;off.height=n;off.getContext('2d').putImageData(img,0,0);
+    ctx.imageSmoothingEnabled=true;ctx.drawImage(off,0,0,w,h);
+  } else {ctx.fillStyle=css('--panel');ctx.fillRect(0,0,w,h)}
+  // grid
+  ctx.strokeStyle=css('--grid');ctx.lineWidth=1;ctx.globalAlpha=0.6;
+  for(let g=-HALF;g<=HALF;g+=50){let [x1,y1]=W2S(g,-HALF),[x2,y2]=W2S(g,HALF);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();[x1,y1]=W2S(-HALF,g);[x2,y2]=W2S(HALF,g);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}
+  ctx.globalAlpha=1;
+  // cells
+  cs.forEach((c,k)=>{const [a,b]=W2S(c.sx,c.sy),[d,e]=W2S(c.dx,c.dy);
+    ctx.strokeStyle=css('--fg');ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(d,e);ctx.stroke();
+    ctx.fillStyle=css('--fg');ctx.beginPath();ctx.arc(a,b,RMIN/(2*HALF)*w,0,7);ctx.fill();
+    ctx.font='12px system-ui,sans-serif';ctx.fillText('cell '+(k+1),a+10,b+16);});
+  // electrodes
+  const [rx,ry]=W2S(rec.x,rec.y);ctx.fillStyle=css('--c3');ctx.strokeStyle=css('--panel');ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(rx,ry,7,0,7);ctx.fill();ctx.stroke();ctx.fillStyle=css('--fg');ctx.font='bold 12px system-ui,sans-serif';ctx.fillText('rec',rx+9,ry-8);
+  if(!$('refinf').checked){const [fx,fy]=W2S(ref.x,ref.y);ctx.fillStyle=css('--c4');ctx.fillRect(fx-6,fy-6,12,12);ctx.strokeRect(fx-6,fy-6,12,12);ctx.fillStyle=css('--fg');ctx.fillText('ref',fx+9,fy-8)}
+}
+function render(){
+  $('ang_v').textContent=Math.round(ctl('ang'))+'°';$('len_v').textContent=Math.round(ctl('len'))+' µm';
+  $('I0_v').textContent=sig(ctl('I0'),2)+' nA';$('off_v').textContent=(ctl('off')>=0?'+':'')+sig(ctl('off'),2)+' ms';
+  $('sig_v').textContent=sig(ctl('sig'),2)+' S/m';$('tt_v').textContent=sig(ctl('tt'),2)+' ms';
+  $('off').disabled=!$('c2on').checked;
+  drawField();
+  const sigma=ctl('sig'),I0=ctl('I0'),cs=cells(),t=[],v=[],v1=[],v2=[],isr=[];
+  for(let k=0;k<=400;k++){const tt=k*0.01;t.push(tt);v.push(recorded(cs,tt,sigma,I0));v1.push(recorded(cs,tt,sigma,I0,cs[0]));if(cs[1])v2.push(recorded(cs,tt,sigma,I0,cs[1]));isr.push(iS(tt,I0))}
+  const series=[{x:t,y:v,c:css('--c3'),w:2.4}];
+  if(cs[1]){series.push({x:t,y:v1,c:css('--c1'),w:1.5,d:[5,4]},{x:t,y:v2,c:css('--c2'),w:1.5,d:[5,4]})}
+  plot($('cv1'),{xlim:[0,4],ylim:range([v,v1,v2],0.1,[0]),xlabel:'time (ms)',ylabel:'recorded V (µV)',s:series,h:[{y:0}],v:[{x:ctl('tt'),t:'snapshot'}]});
+  legend('leg1',[['recorded (rec − ref)',css('--c3')]].concat(cs[1]?[['from cell 1',css('--c1')],['from cell 2',css('--c2')]]:[]));
+  // amplitude vs distance along ray from cell-1 soma through the electrode
+  let ux=rec.x,uy=rec.y,nrm=Math.hypot(ux,uy);if(nrm<1){ux=1;uy=0;nrm=1}ux/=nrm;uy/=nrm;
+  let imax=-1e9,imin=1e9;for(const q of isr){imax=Math.max(imax,q);imin=Math.min(imin,q)}
+  const ds=[],amp=[];for(let r=10;r<=400;r*=1.03){ds.push(r);amp.push((imax-imin)*Math.abs(geo(cs[0],ux*r,uy*r,sigma)))}
+  const here=Math.max(10,nrm),hereAmp=(imax-imin)*Math.abs(geo(cs[0],rec.x,rec.y,sigma));
+  const ylo=Math.max(0.01,Math.min(...amp.filter(a=>a>0))),yhi=Math.max(...amp)*1.3;
+  plot($('cv2'),{xlim:[10,400],xlog:true,ylim:[ylo,yhi],ylog:true,xlabel:'distance from cell-1 soma along this direction (µm)',ylabel:'peak-to-peak (µV)',s:[{x:ds,y:amp,c:css('--c1')}],p:[{x:here,y:Math.max(ylo,hereAmp),c:css('--c3')}]});
+  legend('leg2',[['cell 1 alone, ideal reference',css('--c1')],['electrode position',css('--c3')]]);
+  let mx=-1e9,mn=1e9;for(const q of v){mx=Math.max(mx,q);mn=Math.min(mn,q)}
+  const firstBig=v.reduce((b,q)=>Math.abs(q)>Math.abs(b)?q:b,0);
+  $('read').innerHTML=`<div><span>Electrode distance from cell-1 soma</span><span>${sig(Math.hypot(rec.x,rec.y),3)} µm</span></div>
+  <div><span>Recorded peak-to-peak</span><span>${sig(mx-mn,3)} µV</span></div>
+  <div><span>Largest deflection is</span><span>${firstBig<0?'negative':'positive'} (${sig(firstBig,3)} µV)</span></div>
+  <div><span>Reference</span><span>${$('refinf').checked?'ideal (far away)':'placed at ('+Math.round(ref.x)+', '+Math.round(ref.y)+') µm'}</span></div>`;
+}
+$('field').addEventListener('click',e=>{
+  const r=e.target.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*2*HALF-HALF,y=HALF-(e.clientY-r.top)/r.height*2*HALF;
+  if(placing==='rec')rec={x,y};else{ref={x,y};$('refinf').checked=false}
+  if($('predict').checked){covered=true;$('cover').classList.add('on')}
+  render();
+});
+$('place').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;placing=b.dataset.v;document.querySelectorAll('#place button').forEach(x=>x.classList.toggle('on',x===b))});
+document.querySelectorAll('input').forEach(e=>e.addEventListener('input',()=>{if($('predict').checked&&e.id!=='predict'){covered=true;$('cover').classList.add('on')}render()}));
+$('predict').addEventListener('change',()=>{covered=$('predict').checked;$('cover').classList.toggle('on',covered);render()});
+$('reveal').onclick=()=>{covered=false;$('cover').classList.remove('on');render()};
+window.addEventListener('resize',render);
+setCtl('ang',90);setCtl('len',100);setCtl('I0',3);setCtl('off',0);setCtl('sig',0.3);setCtl('tt',1);
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# OS and editor clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# Local AI-tool state (not part of the course)
+.claude/
+
+# Widgets the tutor builds during a session stay with that learner.
+# Promote good ones into widgets/ by hand.
+widgets/generated/*
+!widgets/generated/README.md

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Biphasic Stimulation</title>
+<style>
+:root{--bg:#f7f6f2;--panel:#fff;--fg:#1d1d1f;--muted:#66666c;--grid:#e8e6e0;--border:#dcd9d2;--accent:#2f6fdf;--c1:#2f6fdf;--c2:#d9480f;--c3:#2b8a3e;--c4:#9c36b5;--ghost:#a3a7ad;--warn:#c92a2a}
+@media (prefers-color-scheme:dark){:root{--bg:#16171a;--panel:#1f2024;--fg:#ececef;--muted:#9a9aa2;--grid:#2c2d33;--border:#35363d;--accent:#6ea0ff;--c1:#6ea0ff;--c2:#ff8a50;--c3:#5fd07a;--c4:#d58cf0;--ghost:#62666d;--warn:#ff6b6b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:1.35rem;margin:.2em 0}
+.sub{color:var(--muted);margin:0 0 8px}
+.banner{border:1px solid var(--warn);color:var(--warn);border-radius:8px;padding:6px 10px;font-size:.85rem;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:300px 1fr;gap:16px}
+@media (max-width:780px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+label{display:block;font-size:.85rem;color:var(--muted);margin-top:8px}
+label b{color:var(--fg);font-weight:600;float:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+canvas{width:100%;height:200px;display:block}
+.plots{position:relative}
+.cover{position:absolute;inset:0;background:var(--panel);display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;border-radius:10px;text-align:center;padding:20px;z-index:2}
+.cover.on{display:flex}
+button{font:inherit;font-size:.9rem;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--fg);cursor:pointer}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.readout{font-variant-numeric:tabular-nums;margin-top:10px;font-size:.9rem}
+.readout div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--grid);padding:3px 0}
+.readout .warn{color:var(--warn);font-weight:600}
+.note{font-size:.8rem;color:var(--muted);margin-top:12px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin:2px 0 4px 62px}
+.legend span::before{content:"";display:inline-block;width:16px;height:3px;background:var(--c);margin-right:6px;vertical-align:middle}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.seg{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:4px}
+.seg button{border:0;border-radius:0;flex:1;font-size:.82rem;padding:6px 4px}
+.seg button.on{background:var(--accent);color:#fff}
+.check{display:flex;gap:6px;align-items:center;margin-top:10px;font-size:.85rem;color:var(--fg)}
+fieldset{border:1px solid var(--border);border-radius:8px;margin:10px 0 0;padding:4px 10px 10px}
+legend.fs{font-size:.85rem;font-weight:600;padding:0 4px}
+details{margin-top:12px;font-size:.88rem}
+summary{cursor:pointer;font-weight:600}
+details li{margin:4px 0}
+h3{font-size:.85rem;color:var(--muted);margin:14px 0 0 62px;font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<h1>Biphasic current-controlled stimulation</h1>
+<p class="sub">A current-controlled pulse drives charge through a simple electrode interface: R<sub>s</sub> in series with (C<sub>dl</sub> ∥ R<sub>f</sub>). Modules 9, 10, and 11. Cathodic current is shown as negative.</p>
+<div class="banner">All numbers here are <b>illustrative</b>. Nothing in this widget is a stimulation setting or a safety limit. Use the device manual, electrode specifications, lab SOP, and your mentor for real experiments.</div>
+<div class="grid">
+<div class="panel">
+  <div class="seg" id="pol"><button data-v="c" class="on">Cathodic-first</button><button data-v="a">Anodic-first</button></div>
+  <fieldset><legend class="fs">Waveform</legend>
+  <label>Phase-1 amplitude <b id="I1_v"></b><input type="range" id="I1" min="0" max="1000" data-min="0" data-max="100"></label>
+  <label>Phase-1 width <b id="W1_v"></b><input type="range" id="W1" min="0" max="1000" data-min="10" data-max="1000" data-log></label>
+  <label>Interphase gap <b id="G_v"></b><input type="range" id="G" min="0" max="1000" data-min="0" data-max="500"></label>
+  <label>Phase-2 amplitude (fraction of phase 1) <b id="R2_v"></b><input type="range" id="R2" min="0" max="1000" data-min="0.1" data-max="1"></label>
+  <label>Charge balance (phase 2 / phase 1) <b id="B_v"></b><input type="range" id="B" min="0" max="1000" data-min="0" data-max="150"></label>
+  <label>Pulses in train <b id="N_v"></b><input type="range" id="N" min="1" max="20" step="1"></label>
+  <label>Pulse rate <b id="F_v"></b><input type="range" id="F" min="0" max="1000" data-min="1" data-max="1000" data-log></label>
+  </fieldset>
+  <fieldset><legend class="fs">Electrode and stimulator</legend>
+  <label>Geometric diameter <b id="D_v"></b><input type="range" id="D" min="0" max="1000" data-min="10" data-max="500" data-log></label>
+  <label>Series resistance R<sub>s</sub> <b id="Rs_v"></b><input type="range" id="Rs" min="0" max="1000" data-min="1" data-max="100" data-log></label>
+  <label>Interface capacitance C<sub>dl</sub> <b id="C_v"></b><input type="range" id="C" min="0" max="1000" data-min="0.1" data-max="100" data-log></label>
+  <label>Faradaic leak R<sub>f</sub> <b id="Rf_v"></b><input type="range" id="Rf" min="0" max="1000" data-min="0.1" data-max="100" data-log></label>
+  <label>Compliance limit ± <b id="V_v"></b><input type="range" id="V" min="0" max="1000" data-min="0.5" data-max="20" data-log></label>
+  </fieldset>
+  <div class="row"><button id="reset">Reset</button></div>
+  <label class="check"><input type="checkbox" id="predict"> Prediction mode (hide results)</label>
+  <details>
+    <summary>Try this</summary>
+    <ol>
+      <li>Predict, then double the phase width. What happens to charge per phase and to the C<sub>dl</sub> voltage?</li>
+      <li>Lower C<sub>dl</sub> (a smaller or poorer interface) until the compliance limit is hit. Why does the delivered current fall below the command?</li>
+      <li>Set balance to 80% and use a 10-pulse train at 100 Hz. What builds up? Now try 100%.</li>
+      <li>Raise C<sub>dl</sub> ×10, which is roughly what a high-area coating aims for. What happens to polarization for the same charge?</li>
+      <li>Switch the phase order. What changes at the interface? What <em>isn't</em> modeled here?</li>
+    </ol>
+  </details>
+</div>
+<div class="panel plots">
+  <div class="cover" id="cover"><div><b>Make your prediction first.</b><br>Say what you expect and why.</div><button class="primary" id="reveal">Reveal</button></div>
+  <h3 style="margin-top:0">First pulse</h3>
+  <div class="legend" id="leg1"></div>
+  <canvas id="cv1"></canvas>
+  <div class="legend" id="leg2"></div>
+  <canvas id="cv2"></canvas>
+  <h3>Whole train: interface polarization</h3>
+  <canvas id="cv3"></canvas>
+  <div class="readout" id="read"></div>
+  <p class="note">Lumped linear model. Real interfaces are nonlinear, and faradaic reactions depend on material, potential, and history. The stimulator model is an ideal current source with a hard compliance limit. The tissue response, meaning which neural elements are activated, is <b>not</b> modeled.</p>
+</div>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function ctl(id){const e=$(id);if(!('min' in e.dataset))return +e.value;const lo=+e.dataset.min,hi=+e.dataset.max,t=e.value/1000;return 'log' in e.dataset?lo*Math.pow(hi/lo,t):lo+(hi-lo)*t}
+function setCtl(id,v){const e=$(id);if(!('min' in e.dataset)){e.value=v;return}const lo=+e.dataset.min,hi=+e.dataset.max;e.value=Math.round(1000*('log' in e.dataset?Math.log(v/lo)/Math.log(hi/lo):(v-lo)/(hi-lo)))}
+function sig(v,p=3){if(v===0)return'0';if(Math.abs(v)<1e-12)return'0';return String(+v.toPrecision(p))}
+function niceTicks(a,b,n){const span=b-a;if(!(span>0))return[a];const raw=span/(n||5),p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p,st=(f<1.5?1:f<3?2:f<7?5:10)*p,t=[];for(let v=Math.ceil(a/st-1e-9)*st;v<=b+st*1e-9;v+=st)t.push(+v.toPrecision(10));return t}
+function setup(c){const d=window.devicePixelRatio||1,r=c.getBoundingClientRect();c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return{ctx:x,w:r.width,h:r.height}}
+function plot(c,o){
+  const {ctx,w,h}=setup(c),m={l:62,r:14,t:10,b:40},pw=w-m.l-m.r,ph=h-m.t-m.b;
+  const fg=css('--fg'),mu=css('--muted'),gr=css('--grid');
+  const X=v=>m.l+(v-o.xlim[0])/(o.xlim[1]-o.xlim[0])*pw,Y=v=>m.t+ph-(v-o.ylim[0])/(o.ylim[1]-o.ylim[0])*ph;
+  ctx.clearRect(0,0,w,h);ctx.font='12px system-ui,sans-serif';ctx.lineWidth=1;
+  ctx.strokeStyle=gr;ctx.fillStyle=mu;ctx.textAlign='center';ctx.textBaseline='top';
+  for(const v of niceTicks(o.xlim[0],o.xlim[1],6)){const x=X(v);ctx.beginPath();ctx.moveTo(x,m.t);ctx.lineTo(x,m.t+ph);ctx.stroke();ctx.fillText(sig(v),x,m.t+ph+5)}
+  ctx.textAlign='right';ctx.textBaseline='middle';
+  for(const v of niceTicks(o.ylim[0],o.ylim[1],5)){const y=Y(v);ctx.beginPath();ctx.moveTo(m.l,y);ctx.lineTo(m.l+pw,y);ctx.stroke();ctx.fillText(sig(v),m.l-6,y)}
+  ctx.strokeStyle=mu;ctx.strokeRect(m.l,m.t,pw,ph);
+  ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(o.xlabel||'',m.l+pw/2,h-2);
+  ctx.save();ctx.translate(13,m.t+ph/2);ctx.rotate(-Math.PI/2);ctx.textBaseline='middle';ctx.fillText(o.ylabel||'',0,0);ctx.restore();
+  ctx.save();ctx.beginPath();ctx.rect(m.l,m.t,pw,ph);ctx.clip();
+  for(const l of o.h||[]){ctx.strokeStyle=l.c||mu;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(m.l,Y(l.y));ctx.lineTo(m.l+pw,Y(l.y));ctx.stroke();ctx.setLineDash([]);if(l.t){ctx.fillStyle=l.c||mu;ctx.textAlign='right';ctx.textBaseline='bottom';ctx.fillText(l.t,m.l+pw-4,Y(l.y)-2)}}
+  for(const s of o.s||[]){ctx.strokeStyle=s.c;ctx.lineWidth=s.w||2;ctx.setLineDash(s.d||[]);ctx.beginPath();for(let i=0;i<s.x.length;i++){const px=X(s.x[i]),py=Y(s.y[i]);i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke();ctx.setLineDash([])}
+  ctx.restore();
+}
+function range(arrs,pad,incl){pad=pad==null?0.08:pad;let lo=Infinity,hi=-Infinity;for(const a of arrs)for(const v of a){if(isFinite(v)){if(v<lo)lo=v;if(v>hi)hi=v}}for(const v of incl||[]){lo=Math.min(lo,v);hi=Math.max(hi,v)}if(!isFinite(lo)){lo=0;hi=1}if(hi-lo<1e-9){hi+=1;lo-=1}const p=(hi-lo)*pad;return[lo-p,hi+p]}
+function legend(id,items){$(id).innerHTML=items.map(([t,c])=>`<span style="--c:${c}">${t}</span>`).join('')}
+function initPredict(){const cb=$('predict'),cv=$('cover');$('reveal').onclick=()=>cv.classList.remove('on');cb.onchange=()=>cv.classList.toggle('on',cb.checked);document.addEventListener('input',e=>{if(e.target!==cb&&cb.checked)cv.classList.add('on')});document.addEventListener('click',e=>{if(e.target.closest('.seg')&&cb.checked)cv.classList.add('on')})}
+
+let pol='c';
+$('pol').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pol=b.dataset.v;document.querySelectorAll('#pol button').forEach(x=>x.classList.toggle('on',x===b));render()});
+function reset(){setCtl('I1',20);setCtl('W1',200);setCtl('G',50);setCtl('R2',1);setCtl('B',100);setCtl('N',1);setCtl('F',100);setCtl('D',30);setCtl('Rs',10);setCtl('C',10);setCtl('Rf',10);setCtl('V',5);render()}
+function sim(){
+  // SI units internally
+  const I1=ctl('I1')*1e-6,W1=ctl('W1')*1e-6,G=ctl('G')*1e-6,r2=ctl('R2'),bal=ctl('B')/100,N=Math.round(ctl('N')),F=ctl('F');
+  const Rs=ctl('Rs')*1e3,C=ctl('C')*1e-9,Rf=ctl('Rf')*1e6,Vc0=ctl('V');
+  const s1=pol==='c'?-1:1,I2=r2*I1,W2=I2>0?bal*W1/r2:0,Tp=W1+G+W2,period=1/F;
+  const tauf=Rf*C,dt=Math.min(1e-6,Math.max(W1,1e-5)/200);
+  const icmd=t=>t<W1?s1*I1:(t<W1+G?0:(t<Tp?-s1*I2:0));
+  let Vc=0,hit=false,peakV=0,q1=0,q2=0;
+  const Z={t:[],ic:[],id:[],ve:[],vc:[]};
+  const tr={t:[],vc:[]};
+  const pre=Math.min(50e-6,0.2*Tp),post=Math.max(0.3*Tp,100e-6);
+  let tglob=0;
+  for(let p=0;p<N;p++){
+    const first=p===0;
+    if(first){for(let t=-pre;t<0;t+=pre/20){Z.t.push(t*1e6);Z.ic.push(0);Z.id.push(0);Z.ve.push(Vc);Z.vc.push(Vc)}}
+    const steps=Math.ceil(Tp/dt);
+    for(let k=0;k<steps;k++){
+      const t=k*dt,ic=icmd(t+dt/2);let id=ic;
+      const vneed=ic*Rs+Vc;
+      if(Math.abs(vneed)>Vc0&&ic!==0){hit=true;id=(Math.sign(vneed)*Vc0-Vc)/Rs;if(Math.sign(id)!==Math.sign(ic))id=0}
+      const ve=id*Rs+Vc;peakV=Math.max(peakV,Math.abs(ve));
+      if(first){if(t<W1)q1+=id*dt;else if(t>=W1+G)q2+=id*dt;if(k%Math.max(1,Math.floor(steps/600))===0){Z.t.push(t*1e6);Z.ic.push(ic*1e6);Z.id.push(id*1e6);Z.ve.push(ve);Z.vc.push(Vc)}}
+      if(k%Math.max(1,Math.floor(steps/40))===0){tr.t.push((tglob+t)*1e3);tr.vc.push(Vc*1e3)}
+      const vinf=id*Rf;Vc=vinf+(Vc-vinf)*Math.exp(-dt/tauf);
+    }
+    tglob+=Tp;
+    if(first){const vcEnd=Vc;for(let t=0;t<=post;t+=post/60){const v=vcEnd*Math.exp(-t/tauf);Z.t.push((Tp+t)*1e6);Z.ic.push(0);Z.id.push(0);Z.ve.push(v);Z.vc.push(v)}}
+    const rest=(p<N-1)?Math.max(0,period-Tp):Math.max(period,5*tauf>20*period?period*3:5*tauf);
+    for(let j=1;j<=60;j++){const t=rest*j/60;tr.t.push((tglob+t)*1e3);tr.vc.push(Vc*Math.exp(-t/tauf)*1e3)}
+    Vc*=Math.exp(-(p<N-1?Math.max(0,period-Tp):0)/tauf);
+    tglob+=(p<N-1)?Math.max(0,period-Tp):0;
+  }
+  const area=Math.PI*Math.pow(ctl('D')*1e-4/2,2); // cm²
+  const vcFinal=tr.vc[tr.vc.length-1];
+  return{Z,tr,q1,q2,area,hit,peakV,Vc0,Tp,W2,tauf,vcFinal,overlap:Tp>period&&N>1,I1,W1};
+}
+function render(){
+  $('I1_v').textContent=sig(ctl('I1'),3)+' µA';$('W1_v').textContent=Math.round(ctl('W1'))+' µs';$('G_v').textContent=Math.round(ctl('G'))+' µs';
+  $('R2_v').textContent=sig(ctl('R2'),2)+' ×';$('B_v').textContent=Math.round(ctl('B'))+'%';$('N_v').textContent=Math.round(ctl('N'));$('F_v').textContent=sig(ctl('F'),3)+' Hz';
+  $('D_v').textContent=Math.round(ctl('D'))+' µm';$('Rs_v').textContent=sig(ctl('Rs'),3)+' kΩ';$('C_v').textContent=sig(ctl('C'),3)+' nF';$('Rf_v').textContent=sig(ctl('Rf'),3)+' MΩ';$('V_v').textContent=sig(ctl('V'),3)+' V';
+  const s=sim(),Z=s.Z;
+  plot($('cv1'),{xlim:[Z.t[0],Z.t[Z.t.length-1]],ylim:range([Z.ic,Z.id],0.1,[0]),xlabel:'time (µs)',ylabel:'current (µA)',
+    s:[{x:Z.t,y:Z.ic,c:css('--ghost'),w:2,d:[6,4]},{x:Z.t,y:Z.id,c:css('--c1'),w:2.2}],h:[{y:0}]});
+  legend('leg1',[['commanded',css('--ghost')],['delivered',css('--c1')]]);
+  plot($('cv2'),{xlim:[Z.t[0],Z.t[Z.t.length-1]],ylim:range([Z.ve,Z.vc],0.1,[0,Math.min(s.Vc0,Math.max(...Z.ve.map(Math.abs))*1.3),-Math.min(s.Vc0,Math.max(...Z.ve.map(Math.abs))*1.3)]),xlabel:'time (µs)',ylabel:'voltage (V)',
+    s:[{x:Z.t,y:Z.ve,c:css('--c2')},{x:Z.t,y:Z.vc,c:css('--c3'),w:2.4}],h:[{y:0},{y:s.Vc0,t:'+compliance',c:css('--warn')},{y:-s.Vc0,t:'−compliance',c:css('--warn')}]});
+  legend('leg2',[['electrode voltage (I·R_s + V_Cdl)',css('--c2')],['interface polarization V_Cdl',css('--c3')]]);
+  plot($('cv3'),{xlim:[0,s.tr.t[s.tr.t.length-1]],ylim:range([s.tr.vc],0.1,[0]),xlabel:'time (ms)',ylabel:'V_Cdl (mV)',s:[{x:s.tr.t,y:s.tr.vc,c:css('--c3')}],h:[{y:0}]});
+  const nC=q=>sig(q*1e9,3)+' nC';
+  const dens=Math.abs(s.q1)*1e6/s.area;
+  $('read').innerHTML=`<div><span>Commanded phase-1 charge (I × width)</span><span>${nC(s.I1*s.W1)}</span></div>
+  <div><span>Delivered phase-1 / phase-2 charge</span><span>${nC(s.q1)} / ${nC(s.q2)}</span></div>
+  <div><span>Net charge per pulse (delivered)</span><span>${nC(s.q1+s.q2)}</span></div>
+  <div><span>Phase-1 charge density (geometric area)</span><span>${sig(dens,3)} µC/cm²</span></div>
+  <div><span>Phase-2 width (from balance setting)</span><span>${Math.round(s.W2*1e6)} µs</span></div>
+  <div><span>Peak electrode voltage</span><span>${sig(s.peakV,3)} V</span></div>
+  <div><span>Compliance limit reached?</span><span class="${s.hit?'warn':''}">${s.hit?'YES: delivered current fell below command':'no'}</span></div>
+  <div><span>Interface discharge time constant R<sub>f</sub>·C<sub>dl</sub></span><span>${sig(s.tauf*1e3,3)} ms</span></div>
+  <div><span>Residual polarization at end of train view</span><span>${sig(s.vcFinal,3)} mV</span></div>
+  ${s.overlap?'<div class="warn"><span>Pulse is longer than the period at this rate</span><span>lower the rate</span></div>':''}`;
+}
+$('reset').onclick=reset;
+document.querySelectorAll('input').forEach(e=>e.addEventListener('input',render));
+window.addEventListener('resize',render);
+initPredict();reset();
+</script>
+</body>
+</html>
