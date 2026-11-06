@@ -1,6 +1,6 @@
 # Module 7: What extracellular electrodes measure
 
-> **Builds on:** Modules 1, 5, 6 · **Next:** `08_multielectrode_arrays.md` · **Widgets:** `widgets/extracellular_field.html`
+> **Builds on:** Modules 1, 5, 6 · **Next:** `08_array_and_switch_matrix.md` · **Widgets:** `widgets/extracellular_field.html`
 
 ## Destination
 
@@ -42,8 +42,8 @@ The learner can explain extracellular voltage as a relative measurement shaped b
 3. **Reference.** Move the reference from "far away" to a spot near the cell. Every recorded value changes, but the cell doesn't.
 4. **Synchrony.** Turn on cell 2 and change its timing offset from 0 (synchronous) to ±1 ms. Compare the summed trace.
 5. **Orientation.** Rotate the cell while keeping the electrode fixed.
-- Filtering isn't in this widget. If the learner asks, open `branches/filtering.md` or build an on-the-fly widget.
-- Draw the signal chain on the fly (membrane current → field → interface → amplifier → filter → ADC → file). It becomes the backbone of Module 8.
+- Filtering isn't in this widget. If the learner asks, give a short answer and say Module 9 covers it properly; build an on-the-fly plot only if it unblocks the current question.
+- Draw the signal chain on the fly (membrane current → field → interface → amplifier → filter → ADC → file). It becomes the backbone of Modules 8 to 10.
 
 ## Transfer criterion
 
@@ -52,7 +52,7 @@ The learner can give at least four non-neural reasons why two electrodes might r
 ## Memory
 
 - **Uses from memory:** Module 1's "voltage is always relative to something" (quote it back; it is now literally the reference electrode); Module 5's answer about extracellular vs. intracellular spikes, which should now be revisited and upgraded; and Module 6's answer about what an MEA can detect of synapses.
-- **Record for later (reused in Modules 8 and 13):**
+- **Record for later (reused in Modules 8, 10, 13, and 14):**
   - the learner's list of non-neural reasons for amplitude differences;
   - their explanation of why reference choice affects all channels;
   - any "each electrode = one neuron" or "negative = inhibitory" misconception, and its repair.

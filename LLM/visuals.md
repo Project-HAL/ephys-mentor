@@ -72,6 +72,6 @@ Prefer Mermaid or SVG for:
 
 - circuit equivalents (membrane R ∥ C with battery; electrode Rs + (Cdl ∥ Rct));
 - signal chains (membrane current → field → electrode interface → amplifier → filter → ADC → file);
-- causal graphs for the capstone cases (Module 13, Case D).
+- causal graphs for the capstone cases (Module 14, Case D).
 
 Keep diagrams small and ask the learner to explain or redraw them.

@@ -12,13 +12,15 @@ Every widget has:
 
 | File | Shows | Modules | Key moments |
 |---|---|---|---|
-| `rc_circuit.html` | RC charging and discharging. Voltage-step (series RC) and current-injection (membrane R ∥ C) modes; freeze a reference trace | 2, 4 (branches: filtering, patch clamp) | Current at t = 0⁺ vs. later; double R vs. double C; brief vs. long pulse; why the final V depends on R only in current mode |
+| `rc_circuit.html` | RC charging and discharging. Voltage-step (series RC) and current-injection (membrane R ∥ C) modes; freeze a reference trace | 2, 4, 9 (branch: patch clamp) | Current at t = 0⁺ vs. later; double R vs. double C; brief vs. long pulse; why the final V depends on R only in current mode; the RC element as a low-pass filter |
 | `nernst_ghk.html` | Nernst potentials for K⁺, Na⁺, Cl⁻, and any ion (choose z); GHK resting V_m on a number line; driving-force direction table | 3 | Sign and valence; "opening K⁺ channels" depolarizing when V_m < E_K; weighted tug-of-war |
 | `synaptic_integration.html` | Passive compartment with two conductance-based synapses (alpha functions); holding current; driving force; shunting | 4, 6 (branch: patch clamp) | Driving force → reversal; same receptor, opposite effect; temporal summation vs. τ_m; shunting inhibition |
-| `action_potential.html` | Hodgkin-Huxley model: V, gates (m, h, n), conductances, currents; two pulses; Na⁺ availability; K⁺ scaling | 5 | Threshold as a tipping region; stronger ≠ taller; refractoriness via h and n; rate coding with long steps |
-| `extracellular_field.html` | 2-D potential map from sink/source neurons; click to place recording electrode and reference; two cells with timing offset; amplitude vs. distance | 7, 8 (branches: reference, volume conduction) | Distance falloff; polarity depends on position; reference changes every channel; synchrony; neighbors correlate |
-| `impedance_spectrum.html` | Bode plot (|Z| and phase) of R_s + (CPE ∥ R_ct); effective-area multiplier; presets; frozen reference | 10, 11, 12 (branch: impedance mapping) | Resistor vs. capacitor; "no single impedance"; coatings lower the capacitive part but not R_s; same |Z|, different spectrum |
-| `biphasic_stimulation.html` | Current-controlled biphasic pulse into R_s + (C_dl ∥ R_f); compliance limit; charge per phase and density; train polarization | 9, 10, 11 | Charge = I × t; compliance clipping; imbalance ratchets polarization; more C_dl → less polarization |
+| `action_potential.html` | Hodgkin-Huxley model: V, gates (m, h, n), conductances, currents; two pulses; Na⁺ availability; K⁺ scaling | 5, 10 | Threshold as a tipping region; stronger ≠ taller; refractoriness via h and n; rate coding with long steps; the intracellular waveform vs. a spike-table row |
+| `extracellular_field.html` | 2-D potential map from sink/source neurons; click to place recording electrode and reference; two cells with timing offset; amplitude vs. distance | 7, 8, 13, 14 (branches: reference, volume conduction) | Distance falloff; polarity depends on position; reference changes every channel; synchrony; neighbors correlate |
+| `impedance_spectrum.html` | Bode plot (|Z| and phase) of R_s + (CPE ∥ R_ct); effective-area multiplier; presets; frozen reference | 12, 14 (branches: coatings, impedance mapping) | Resistor vs. capacitor; "no single impedance"; bubble / poor wetting; effective area lowers the capacitive part but not R_s; same |Z|, different spectrum |
+| `biphasic_stimulation.html` | Current-controlled biphasic pulse into R_s + (C_dl ∥ R_f); compliance limit; charge per phase and density; train polarization | 11, 12, 14 (branch: coatings) | Charge = I × t; compliance clipping; imbalance ratchets polarization; more C_dl → less polarization |
+
+Not yet built, needed by the new acquisition modules (currently drawn on the fly): a routing / activity-scan widget (Module 8), a filter-sampling-quantization widget (Module 9), a threshold-detection widget (Module 10), and a spike-table-to-raster-to-ASDR widget (Module 13). See `MAINTAINING.md`.
 
 ## For the tutor (LLM)
 

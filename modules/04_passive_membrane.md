@@ -39,6 +39,6 @@ The learner can use an RC model to explain temporal summation while naming at le
 
 - **Uses from memory:** the learner's Module 2 explanation of τ, which should be quoted back and extended rather than re-taught, and Module 3's "V_m pulled toward E," which is where the battery in the circuit comes from.
 - **Record for later:**
-  - the learner's circuit mapping in their own words (Module 10 revisits equivalent circuits for electrodes, and the "a model is not literal structure" warning applies there too);
+  - the learner's circuit mapping in their own words (Module 12 revisits equivalent circuits for electrodes, and the "a model is not literal structure" warning applies there too);
   - their explanation of temporal summation (Module 6 builds on it);
   - which departures from the RC model they named.

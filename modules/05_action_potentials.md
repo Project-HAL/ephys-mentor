@@ -53,5 +53,5 @@ The learner can tell the causal story from a small depolarization, through regen
 - **Uses from memory:** Module 3's "V_m pulled toward the most permeable ion's E." The upstroke is the Na⁺ permeability jumping, and repolarization is K⁺ winning back. Module 4's passive decay explains why subthreshold inputs fade. Also recheck any pump misconception recorded in Module 3.
 - **Record for later:**
   - the learner's causal AP story in their own words (Module 7 needs "transmembrane currents during a spike" as the source of extracellular signals);
-  - their explanation of refractoriness (Module 9 uses it for stimulation trains);
+  - their explanation of refractoriness (Module 10 uses it for the refractory rule in spike cleaning, and Module 11 for stimulation trains);
   - their answer to "extracellular vs. intracellular spike," to revisit in Module 7.

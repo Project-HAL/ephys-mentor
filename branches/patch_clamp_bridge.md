@@ -11,7 +11,7 @@ Voltage clamp and current clamp control different quantities. What does each one
 - current clamp: you set the injected current and watch the membrane voltage respond (this is Module 4's current-injection picture);
 - voltage clamp: you command the membrane voltage, and the amplifier supplies whatever current is needed to hold it there, so the measured current reflects membrane currents at that voltage;
 - why clamping voltage is useful for studying conductances: `I = g(V − E)` with V held fixed isolates changes in g (Module 3's relation);
-- the parallel with stimulation (Module 9): controlling current and controlling voltage constrain different quantities, and the other one depends on the load;
+- the parallel with stimulation (Module 11): controlling current and controlling voltage constrain different quantities, and the other one depends on the load;
 - intracellular vs. extracellular: patch clamp measures across the membrane, while an MEA measures in the medium relative to a reference (Module 7).
 
 ## Visual moments

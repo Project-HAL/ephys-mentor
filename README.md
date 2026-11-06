@@ -1,6 +1,6 @@
 # Socratic Electrophysiology Mentor
 
-A question-led, multi-session course that teaches new lab members to reason, from first principles, about electricity, neurons, extracellular recording, multielectrode arrays (MEAs), stimulation, and electrode interfaces.
+A question-led, multi-session course that teaches new lab members to reason, from first principles, about electricity, neurons, extracellular recording, the MaxWell CMOS high-density MEA system, stimulation, and what the data that comes out of it actually is. By the end you should be able to take any plot from the lab's pipeline and trace it back to ions crossing a membrane, saying at each step what was measured, what was decided, and what is being inferred.
 
 You don't read this course. You **point an AI at it**, and the AI becomes your tutor. It asks you questions, makes you predict before it explains, shows you interactive simulations, and saves your progress so you can stop and pick up later, even with a different AI.
 
@@ -58,21 +58,21 @@ If your tutor only makes text diagrams, say: *"Use the best visual tool you have
 | Folder | What it's for |
 |---|---|
 | `LLM/` | Instructions for the AI tutor: teaching rules, the "intuition first" principle, visuals, curriculum map, checkpoints, memory format |
-| `modules/` | 14 modules (00–13), from charge and voltage through MEAs, stimulation, coatings, impedance, and a capstone. The tutor loads one at a time |
-| `branches/` | Optional side topics (reference/grounding, noise, filtering, artifact, coupling, volume conduction, impedance mapping, patch clamp) |
+| `modules/` | 15 modules (00–14), from charge and voltage through the array, the acquisition chain, spike detection, stimulation, the interface, reading the output, and a capstone. The tutor loads one at a time |
+| `branches/` | Optional side topics (coatings, impedance mapping, reference/grounding, noise, artifact, coupling, volume conduction, patch clamp) |
 | `memory/` | **Your** progress, insights, and mentor briefs. Updated as you go |
 | `widgets/` | Interactive simulations you can open in any browser |
 | `archive/` | The original single-file version of the course (kept for reference; the tutor ignores it) |
 
 ## Course path
 
-0 Orientation → 1 Charge, voltage, current → 2 Capacitance and RC → 3 Membrane potential → 4 Passive membrane → 5 Action potentials → 6 Synapses → 7 Extracellular recording → 8 MEAs → 9 Stimulation → 10 Electrode interface → 11 PEDOT and platinum black → 12 Impedance → 13 Synthesis
+0 Orientation → 1 Charge, voltage, current → 2 Capacitance and RC → 3 Membrane potential → 4 Passive membrane → 5 Action potentials → 6 Synapses → 7 Extracellular recording → 8 The array and the switch matrix → 9 From potential to sample → 10 What a "spike" is in the file → 11 Stimulation → 12 Interface and impedance → 13 Reading the output → 14 Synthesis
 
 ---
 
 ## For lab leads and mentors
 
-- **Local context:** fill in `LLM/lab_context.md` with your platform, preparations, coatings, and the *titles* of relevant SOPs. The tutor uses it for examples and to point learners to the right place. It will not invent procedures.
+- **Local context:** `LLM/lab_context.md` names the platform (MaxWell MaxOne/MaxTwo), the analysis pipeline, and the *titles* of relevant SOPs. Fill in your preparations and mentors. The tutor uses it for examples and to point learners to the right place. It will not invent procedures.
 - **Giving the course to a new person:** give them a fresh copy of the package. `memory/` belongs to one learner.
 - **Checking progress:** a learner's `memory/progress.md` and `memory/mentor_briefs.md` give you a quick picture of where they are and what they're unsure about.
 - **Adding widgets:** see `widgets/README.md` and the conventions in `LLM/visuals.md`.

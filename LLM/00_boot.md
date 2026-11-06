@@ -89,7 +89,7 @@ LLM/                    Instructions for you (the tutor)
   checkpoints.md        Module checkpoint, mentor brief, final readiness, end point
   memory_spec.md        What to record, when, and in what format
   lab_context.md        Optional local details supplied by the lab
-modules/                One file per module, 00 to 13
+modules/                One file per module, 00 to 14
 branches/               Optional side branches
 memory/                 This learner's persistent state (read and written by you)
 widgets/                Prebuilt interactive HTML simulations, plus generated/ for new ones

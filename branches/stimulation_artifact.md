@@ -1,6 +1,6 @@
 # Branch: Stimulation artifact
 
-> **Open when** the learner asks why recordings look strange right after stimulation, what blanking is, or how to tell artifact from response. Most natural from Modules 9 or 13 (Case C). **Return to the module you came from.**
+> **Open when** the learner asks why recordings look strange right after stimulation, what blanking is, or how to tell artifact from response. Most natural from Modules 11, 13, or 14 (Case C). **Return to the module you came from.**
 
 ## Guiding question
 
@@ -10,7 +10,7 @@ What in the recording chain responds to a stimulus pulse *other than* neurons, a
 
 - saturation: a large pulse can drive the amplifier to its limits, so the channel shows the limit rather than the signal;
 - recovery: after saturation or polarization, the baseline can take time to settle, and a slow recovery can look like a slow biological response;
-- blanking: temporarily disconnecting or ignoring the input around the pulse, and what that hides;
+- blanking: temporarily disconnecting or ignoring the input around the pulse, and what that hides. The lab's pipeline also drops detected spikes in a window after each pulse, so "no response during stimulation" can be true by construction;
 - filtering: filters can smear a sharp artifact into a longer waveform that looks biological;
 - controls for distinguishing artifact from response: timing relative to the pulse, latency vs. distance, dependence on polarity or amplitude, and conditions in which a neural response should disappear while the artifact remains. Discuss these conceptually; the specific pharmacological or procedural controls belong to the lab SOP and mentor.
 
@@ -21,4 +21,4 @@ What in the recording chain responds to a stimulus pulse *other than* neurons, a
 
 ## Return
 
-Tie back to Module 9's "what evidence would separate a true evoked response from residual artifact?" Record it in `memory/insights.md` with the tag `[branch: artifact]`.
+Tie back to Module 11's "what evidence would separate a true evoked response from residual artifact?" Record it in `memory/insights.md` with the tag `[branch: artifact]`.

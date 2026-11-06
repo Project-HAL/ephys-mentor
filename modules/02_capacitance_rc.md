@@ -44,7 +44,7 @@ The learner can predict the qualitative voltage trace after current turns on and
 ## Memory
 
 - **Uses from memory:** the Module 1 definitions of voltage vs. current. "Current is rate of charge transfer" is the key that makes `I_C = C dV/dt` intuitive.
-- **Record for later (important, reused in Modules 4, 9, 10, and 12):**
+- **Record for later (important, reused in Modules 4, 9, 11, and 12):**
   - the learner's own-words explanation of *why* τ = RC (what R does, what C does);
   - their explanation of why no ion crosses the bilayer for the membrane to charge;
-  - whether they grasped "capacitors pass fast changes more easily than slow ones." Module 10/12 builds impedance on this, so mark it *shaky* if unclear.
+  - whether they grasped "capacitors pass fast changes more easily than slow ones." Module 9 builds filtering on this and Module 12 builds impedance on it, so mark it *shaky* if unclear.

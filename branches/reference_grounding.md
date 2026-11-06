@@ -1,6 +1,6 @@
 # Branch: Reference and grounding
 
-> **Open when** the learner asks about ground, reference choice, common-mode signals, or artifacts shared across channels. Most natural from Modules 7, 8, or 10. Keep it tied to the main causal model, and **return to the module you came from**.
+> **Open when** the learner asks about ground, reference choice, common-mode signals, or artifacts shared across channels. Most natural from Modules 7, 8, 9, or 12. Keep it tied to the main causal model, and **return to the module you came from**.
 
 ## Guiding question
 

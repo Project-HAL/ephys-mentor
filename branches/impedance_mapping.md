@@ -1,6 +1,6 @@
 # Branch: Impedance mapping
 
-> **Open when** the learner asks about spatial maps, electrode-to-electrode differences, coatings, coupling, or array quality. Do not let it replace the main curriculum. Record the module you came from in memory, and **return to it explicitly** at the end.
+> **Open when** the learner asks about spatial impedance maps, electrode-to-electrode differences, or array quality. Most natural from Module 12 or Module 14 (Cases A, D, E). Do not let it replace the main curriculum. Record the module you came from in memory, and **return to it explicitly** at the end.
 
 ## Guiding question
 

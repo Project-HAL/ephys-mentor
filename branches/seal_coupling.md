@@ -1,6 +1,6 @@
 # Branch: Seal and coupling
 
-> **Open when** the learner asks why some electrodes pick up much larger signals, what "coupling" or "seal" means, or how cell adhesion matters. Most natural from Modules 7, 8, or 11. **Return to the module you came from.**
+> **Open when** the learner asks why some electrodes pick up much larger signals, what "coupling" or "seal" means, or how cell adhesion matters. Most natural from Modules 7, 8, 10, or 12. **Return to the module you came from.**
 
 ## Guiding question
 
@@ -20,4 +20,4 @@ When a cell sits on or near an electrode, what paths can its transmembrane curre
 
 ## Return
 
-Tie back to the module you came from (Module 7: non-neural reasons for amplitude differences; Module 11: why a coated electrode might record larger spikes). Record it in `memory/insights.md` with the tag `[branch: coupling]`.
+Tie back to the module you came from (Module 7: non-neural reasons for amplitude differences; Module 10: why amplitude in the spike table is not a property of the neuron; the coatings branch: why a coated electrode might record larger spikes). Record it in `memory/insights.md` with the tag `[branch: coupling]`.

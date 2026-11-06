@@ -1,6 +1,6 @@
 # Branch: Noise
 
-> **Open when** the learner asks why a channel is noisy, what sets the noise floor, or whether lower impedance means lower noise. Most natural from Modules 7, 8, 10, or 11. **Return to the module you came from.**
+> **Open when** the learner asks why a channel is noisy, what sets the noise floor, or whether lower impedance means lower noise. Most natural from Modules 7, 8, 9, 10, or 12. **Return to the module you came from.**
 
 ## Guiding question
 
@@ -20,4 +20,4 @@ When a trace is noisy, where could that fluctuation have entered the chain betwe
 
 ## Return
 
-Connect back to the current module's question (for example, Module 11: "does a coating that lowers impedance guarantee better recordings?"). Record it in `memory/insights.md` with the tag `[branch: noise]`.
+Connect back to the current module's question (for example, Module 10: "why does a noisier channel produce fewer detected spikes?", or Module 12: "does lower impedance guarantee better recordings?"). Record it in `memory/insights.md` with the tag `[branch: noise]`.

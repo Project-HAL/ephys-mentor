@@ -68,11 +68,13 @@ The learner is ready to move on when they can:
 - explain an action potential through changing channel states and currents;
 - use reversal potential and driving force to reason about synaptic effects;
 - explain what extracellular electrodes measure relative to a reference;
-- state what MEAs reveal and what they don't reveal on their own;
-- trace stimulation from command to interface to membrane to recorded response;
-- explain the practical benefits and limits of PEDOT and platinum black;
-- interpret impedance using frequency, phase, conditions, controls, and uncertainty;
-- distinguish direct measurement from inference;
+- explain why electrodes and channels are different things on the array, and how routing, scanning, and electrode selection decide what gets recorded;
+- trace a microvolt at an electrode through offset compensation, gain, filtering, sampling, and quantization to an integer and a frame number, and convert back;
+- explain that a spike-table row is a detection decision, name what it misses and invents, and say what the raw trace adds;
+- trace stimulation from command through the stimulation unit, interface, field, and membrane to the recorded response, artifact, blanking window, and event tags;
+- explain why the electrode interface is not a wire and interpret an impedance value cautiously, with frequency, conditions, and controls;
+- take a raster, an ASDR trace, a burst table, or a per-DIV summary and trace it back to the spike table, naming the transformations and parameters in between;
+- distinguish direct measurement from decision from inference, at every stage;
 - propose a discriminating check when several explanations fit an observation.
 
 ## End point and next curriculum
@@ -82,6 +84,6 @@ When the learner meets the readiness criteria, do not drift into advanced analys
 - a connected summary built largely from the learner's own explanations, drawn from `memory/insights.md`;
 - a list of remaining questions for the mentor;
 - a final Progress Note;
-- a suggestion that the next, separate course could cover neural signals and analysis.
+- a suggestion that the next, separate course could cover analysis of the output this course taught them to read.
 
-That later course could include detection, spike sorting, firing statistics, bursts, population activity, dimensionality reduction, decoding, criticality, connectivity, and model validation. Do not teach those topics here unless a short answer is needed to mark the boundary of this course.
+That later course could include spike sorting, firing statistics as research tools, burst and network analysis, population activity, dimensionality reduction, decoding, criticality, connectivity, and model validation. Do not teach those topics here unless a short answer is needed to mark the boundary of this course.

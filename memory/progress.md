@@ -20,12 +20,13 @@
 | 05 Action potentials | not started | | |
 | 06 Synapses and integration | not started | | |
 | 07 Extracellular recording | not started | | |
-| 08 Multielectrode arrays | not started | | |
-| 09 Stimulation | not started | | |
-| 10 Electrode interface | not started | | |
-| 11 PEDOT and platinum black | not started | | |
-| 12 Impedance | not started | | |
-| 13 Synthesis | not started | | |
+| 08 The array and the switch matrix | not started | | |
+| 09 From potential to sample | not started | | |
+| 10 What a "spike" is in the file | not started | | |
+| 11 Stimulation | not started | | |
+| 12 Interface and impedance | not started | | |
+| 13 Reading the output | not started | | |
+| 14 Synthesis | not started | | |
 
 Status values: not started · in progress · passed · passed (provisional) · revisit
 
